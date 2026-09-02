@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">پول‌یار</string>
+    <string name="as_drawer_profile_name">کاربر پول‌یار</string>
+    <string name="as_drawer_profile_hint">برای انتخاب تصویر پروفایل لمس کنید</string>
+    <string name="as_drawer_home">خانه</string>
+    <string name="as_drawer_categories">دسته‌بندی‌ها</string>
+    <string name="as_drawer_subscriptions">پرداخت‌های دوره‌ای</string>
+    <string name="as_drawer_settings">تنظیمات</string>
+    <string name="as_drawer_share">اشتراک‌گذاری</string>
+    <string name="as_drawer_about">درباره نرم‌افزار</string>
+    <string name="as_drawer_contact">تماس با ما</string>
+    <string name="as_drawer_exit">خروج</string>
+    <string name="as_drawer_open">باز کردن منو</string>
+    <string name="as_about_text">پول‌یار یک برنامهٔ مدیریت مالی شخصی است که توسط AS Team Group توسعه و فارسی‌سازی می‌شود.</string>
+    <string name="as_share_text">پول‌یار؛ مدیریت مالی شخصی توسط AS Team Group</string>
+</resources>

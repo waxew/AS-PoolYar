@@ -12,14 +12,16 @@ plugins {
 
 android {
     defaultConfig {
-        applicationId = "ru.resodostudios.cashsense"
-        versionCode = 57
-        versionName = "2.0.0-beta05"
+        // شناسهٔ عمومی نصب و انتشار پول‌یار؛ با کدبیس مرجع تداخل ندارد.
+        applicationId = "com.asteam.poolyar"
+        versionCode = 1
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         androidResources.localeFilters += setOf(
             "en",
+            "fa",
             "ar",
             "de",
             "es",
@@ -46,6 +48,8 @@ android {
             isMinifyEnabled = runMinification
             isShrinkResources = runMinification
             applicationIdSuffix = CsBuildType.RELEASE.applicationIdSuffix
+
+            // TODO AS Team: پیش از انتشار عمومی، SigningConfig اختصاصی Release اضافه شود.
             signingConfig = signingConfigs.named("debug").get()
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -66,6 +70,8 @@ android {
             isIncludeAndroidResources = true
         }
     }
+
+    // Namespace داخلی فعلاً برای کاهش ریسک Refactor گسترده حفظ شده است.
     namespace = "ru.resodostudios.cashsense"
 }
 

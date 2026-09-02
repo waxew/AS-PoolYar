@@ -29,7 +29,8 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "cashsense"
+// نام پروژه در IDE و Gradle از برند پروژهٔ مرجع جدا شده است.
+rootProject.name = "AS-PoolYar"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 

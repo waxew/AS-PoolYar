@@ -1,36 +1,41 @@
-# Cash Sense Project
+# AS-PoolYar Project Guide
 
-Cash Sense is a native Android mobile application written in Kotlin. It's a mobile app designed to
-help users manage their finances effectively. Users can create wallets in different currencies, set
-up categories for transactions, or track subscription payment dates.
+`AS-PoolYar / پول‌یار` یک اپلیکیشن Android مدیریت مالی شخصی است که از کدبیس متن‌باز Cash Sense منشعب شده و برای AS Team فارسی‌سازی و شخصی‌سازی می‌شود.
 
-## Architecture
+## هدف محصول
 
-This project is a modern Android application that follows the official architecture guidance from
-Google. It is a reactive, single-activity app that uses the following:
+کاربر باید بتواند بدون وابستگی دائمی به سرور، کیف‌پول‌ها، درآمدها، هزینه‌ها، دسته‌بندی‌ها، انتقال‌ها و پرداخت‌های دوره‌ای خود را مدیریت کند. حفظ داده‌های محلی در آپدیت‌های آینده یک الزام اصلی است.
 
-- **UI:** Built entirely with Jetpack Compose, including Material 3 components and adaptive layouts
-  for different screen sizes.
-- **State Management:** Unidirectional Data Flow (UDF) is implemented using Kotlin Coroutines and
-  `Flow`s. `ViewModel`s act as state holders, exposing UI state as streams of data.
-- **Dependency Injection:** Hilt is used for dependency injection throughout the app, simplifying
-  the management of dependencies and improving testability.
-- **Navigation:** Navigation is handled by Jetpack Navigation 3 for Compose, allowing for a
-  declarative and type-safe way to navigate between screens.
-- **Data:** The data layer is implemented using the repository pattern.
-    - **Local Data:** Room and DataStore are used for local data persistence.
-    - **Remote Data:** Ktor and OkHttp are used for fetching data from the network.
-- **Background Processing:** WorkManager is used for deferrable background tasks.
+## معماری
 
-## Modules
+- Kotlin + Jetpack Compose + Material 3
+- Single Activity و Navigation 3
+- Clean Architecture و UDF
+- Hilt برای Dependency Injection
+- Room و DataStore برای دادهٔ محلی
+- WorkManager برای پردازش پس‌زمینه
+- Coroutines و Flow برای State و جریان داده
 
-The main Android app lives in the `app/` folder. Feature modules live in `feature/` and core and
-shared modules in `core/`.
+## قواعد AS Team
 
-## Localization
+- Application ID محصول: `com.asteam.poolyar`
+- نام نمایشی: `پول‌یار`
+- تمام تغییرات سورس باید استاندارد `docs/FA_COMMENTING_GUIDE.md` را رعایت کنند.
+- Back باید به صفحهٔ قبلی برگردد و بدون دلیل از برنامه خارج نشود.
+- فرمت مبالغ باید خوانا و دارای جداکنندهٔ سه‌رقمی باشد.
+- ساختار داده و Migrationها باید آپدیت‌خور باشند و دادهٔ کاربر حذف نشود.
+- Release نهایی نباید با کلید Debug منتشر شود.
+- Drawer مشترک AS Team در سمت راست قرار می‌گیرد و شامل پروفایل، خانه، تنظیمات، اشتراک‌گذاری، درباره نرم‌افزار، تماس با ما و خروج است؛ آیتم‌های مالی مرتبط با همین پروژه نیز به آن افزوده می‌شوند.
+- ایمیل پیش‌فرض پشتیبانی: `AS.Developers.Support@Gmail.Com`
 
-All `strings.xml` files with translations are located in the `core/locales/` folder.
+## ساختار ماژول‌ها
 
-## Version control and code location
+- `mobile/`: اپلیکیشن اصلی Android
+- `feature/`: قابلیت‌های مستقل مانند Home، Wallet، Transaction، Category، Subscription و Settings
+- `core/`: دیتابیس، دیتا، دامنه، Design System، Locale، Navigation و سرویس‌های مشترک
+- `work/`: وظایف WorkManager
+- `baselineprofile/`: Benchmark و Baseline Profile
 
-- The project uses git and is hosted in https://github.com/nikbulavin/cashsense.
+## منبع اولیه و مجوز
+
+کدبیس اولیه از `https://github.com/nikbulavin/cashsense` با مجوز Apache License 2.0 آمده است. `LICENSE` و attribution مربوط به منبع اولیه باید حفظ شوند.

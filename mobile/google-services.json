@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "Your:App:Id",
         "android_client_info": {
-          "package_name": "ru.resodostudios.cashsense"
+          "package_name": "com.asteam.poolyar"
         }
       },
       "oauth_client": [],
@@ -28,7 +28,7 @@
       "client_info": {
         "mobilesdk_app_id": "Your:App:Id",
         "android_client_info": {
-          "package_name": "ru.resodostudios.cashsense.debug"
+          "package_name": "com.asteam.poolyar.debug"
         }
       },
       "oauth_client": [],
@@ -47,7 +47,7 @@
       "client_info": {
         "mobilesdk_app_id": "Your:App:Id",
         "android_client_info": {
-          "package_name": "ru.resodostudios.cashsense.demo.debug"
+          "package_name": "com.asteam.poolyar.demo.debug"
         }
       },
       "oauth_client": [],
@@ -66,7 +66,7 @@
       "client_info": {
         "mobilesdk_app_id": "Your:App:Id",
         "android_client_info": {
-          "package_name": "ru.resodostudios.cashsense.demo"
+          "package_name": "com.asteam.poolyar.demo"
         }
       },
       "oauth_client": [],
