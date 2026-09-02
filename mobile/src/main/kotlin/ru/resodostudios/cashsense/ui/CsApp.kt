@@ -97,6 +97,10 @@ import ru.resodostudios.core.navigation.Navigator
 import ru.resodostudios.core.navigation.toEntries
 import ru.resodostudios.cashsense.core.locales.R as localesR
 
+/**
+ * ریشه UI پول‌یار. Drawer مشترک AS Team اینجا دور کل Navigation قرار گرفته تا در تمام مسیرهای اصلی
+ * قابل دسترسی باشد و منطق صفحه‌های مالی اصلی دست‌نخورده باقی بماند.
+ */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun CsApp(
@@ -147,129 +151,132 @@ fun CsApp(
         if (shouldShowNavigation) navSuiteState.show() else navSuiteState.hide()
     }
 
-    NavigationSuiteScaffold(
-        navigationItems = {
-            TOP_LEVEL_NAV_ITEMS.forEach { (navKey, navItem) ->
-                val selected = navKey == appState.navigationState.currentTopLevelKey
-                NavigationSuiteItem(
-                    selected = selected,
-                    icon = {
-                        Icon(
-                            imageVector = if (selected) navItem.selectedIcon else navItem.unselectedIcon,
-                            contentDescription = null,
-                        )
-                    },
-                    label = {
-                        Text(
-                            text = stringResource(navItem.iconTextId),
-                            maxLines = 1,
-                        )
-                    },
-                    onClick = { navigator.navigate(navKey) },
-                )
-            }
-        },
-        navigationSuiteType = navSuiteType,
-        navigationItemVerticalArrangement = Arrangement.Center,
-        state = navSuiteState,
-    ) {
-        Scaffold(
-            snackbarHost = {
-                SnackbarHost(
-                    hostState = snackbarHostState,
-                    modifier = Modifier
-                        .windowInsetsPadding(WindowInsets.safeDrawing)
-                        .then(
-                            if (isFabVisible) {
-                                Modifier.padding(bottom = if (isNavRailVisible) 110.dp else 76.dp)
-                            } else if (appState.navigationState.currentKey is TransactionOverviewNavKey) {
-                                Modifier.padding(bottom = 96.dp)
-                            } else {
-                                Modifier
-                            },
-                        ),
-                )
-            },
-            contentWindowInsets = WindowInsets(0, 0, 0, 0),
-            modifier = Modifier.semantics { testTagsAsResourceId = true },
-        ) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding)
-                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-            ) {
-                val motionScheme = MaterialTheme.motionScheme
-                val scaleSpec = motionScheme.defaultSpatialSpec<Float>()
-                val slideSpec = motionScheme.defaultSpatialSpec<IntOffset>()
-                val fadeSpec = motionScheme.defaultEffectsSpec<Float>()
-
-                val entryProvider = entryProvider {
-                    homeEntry(navigator)
-                    categoryEntry(navigator, fadeSpec)
-                    categoriesEntry(navigator)
-                    subscriptionsEntry(navigator)
-                    settingsEntry(navigator, slideSpec)
-                    licensesEntry(navigator, slideSpec)
-                    walletDialogEntry(navigator)
-                    transactionOverviewEntry(navigator, fadeSpec)
-                    categoryEditorEntry(navigator, slideSpec)
-                    subscriptionDialogEntry(navigator)
-                    transactionEntry(navigator, fadeSpec)
-                    transactionEditorEntry(navigator, slideSpec)
-                    transactionImporterEntry(navigator, slideSpec)
-                    transferEditorEntry(navigator, slideSpec)
-                }
-
-                val enterTransition = scaleIn(scaleSpec, 0.96f) +
-                        slideInVertically(slideSpec) { it / 28 } +
-                        fadeIn(fadeSpec)
-                val popEnterTransition = scaleIn(scaleSpec, 1.04f) +
-                        slideInVertically(slideSpec) { -it / 28 } +
-                        fadeIn(fadeSpec)
-                val exitTransition = scaleOut(scaleSpec, 0.9f) + fadeOut(fadeSpec)
-
-                CompositionLocalProvider(
-                    LocalSnackbarHostState provides snackbarHostState,
-                    LocalIsSinglePane provides isSinglePane,
-                    LocalIsNavRailVisible provides isNavRailVisible,
-                ) {
-                    NavDisplay(
-                        entries = appState.navigationState.toEntries(entryProvider),
-                        sceneStrategies = listOf(
-                            remember { DialogSceneStrategy() },
-                            rememberListDetailSceneStrategy(),
-                        ),
-                        onBack = navigator::goBack,
-                        transitionSpec = { enterTransition togetherWith exitTransition },
-                        popTransitionSpec = { popEnterTransition togetherWith exitTransition },
-                        predictivePopTransitionSpec = { popEnterTransition togetherWith exitTransition },
-                        sharedTransitionScope = LocalSharedTransitionScope.current,
+    AsTeamDrawer(navigator = navigator) {
+        NavigationSuiteScaffold(
+            navigationItems = {
+                TOP_LEVEL_NAV_ITEMS.forEach { (navKey, navItem) ->
+                    val selected = navKey == appState.navigationState.currentTopLevelKey
+                    NavigationSuiteItem(
+                        selected = selected,
+                        icon = {
+                            Icon(
+                                imageVector = if (selected) navItem.selectedIcon else navItem.unselectedIcon,
+                                contentDescription = null,
+                            )
+                        },
+                        label = {
+                            Text(
+                                text = stringResource(navItem.iconTextId),
+                                maxLines = 1,
+                            )
+                        },
+                        onClick = { navigator.navigate(navKey) },
                     )
                 }
-                FabMenu(
-                    visible = isFabVisible,
-                    onMenuItemClick = { fabItem ->
-                        when (fabItem) {
-                            WALLET -> navigator.navigateToWalletDialog()
-                            CATEGORY -> navigator.navigateToCategoryEditor()
-                            SUBSCRIPTION -> navigator.navigateToSubscriptionDialog()
-                        }
-                    },
+            },
+            navigationSuiteType = navSuiteType,
+            navigationItemVerticalArrangement = Arrangement.Center,
+            state = navSuiteState,
+        ) {
+            Scaffold(
+                snackbarHost = {
+                    SnackbarHost(
+                        hostState = snackbarHostState,
+                        modifier = Modifier
+                            .windowInsetsPadding(WindowInsets.safeDrawing)
+                            .then(
+                                if (isFabVisible) {
+                                    Modifier.padding(bottom = if (isNavRailVisible) 110.dp else 76.dp)
+                                } else if (appState.navigationState.currentKey is TransactionOverviewNavKey) {
+                                    Modifier.padding(bottom = 96.dp)
+                                } else {
+                                    Modifier
+                                },
+                            ),
+                    )
+                },
+                contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                modifier = Modifier.semantics { testTagsAsResourceId = true },
+            ) { innerPadding ->
+                Box(
                     modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .windowInsetsPadding(WindowInsets.systemBars),
-                    toggleContainerSize = if (isNavRailVisible) {
-                        ToggleFloatingActionButtonDefaults.containerSizeMedium()
-                    } else {
-                        ToggleFloatingActionButtonDefaults.containerSize()
-                    },
-                )
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding)
+                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                ) {
+                    val motionScheme = MaterialTheme.motionScheme
+                    val scaleSpec = motionScheme.defaultSpatialSpec<Float>()
+                    val slideSpec = motionScheme.defaultSpatialSpec<IntOffset>()
+                    val fadeSpec = motionScheme.defaultEffectsSpec<Float>()
+
+                    val entryProvider = entryProvider {
+                        homeEntry(navigator)
+                        categoryEntry(navigator, fadeSpec)
+                        categoriesEntry(navigator)
+                        subscriptionsEntry(navigator)
+                        settingsEntry(navigator, slideSpec)
+                        licensesEntry(navigator, slideSpec)
+                        walletDialogEntry(navigator)
+                        transactionOverviewEntry(navigator, fadeSpec)
+                        categoryEditorEntry(navigator, slideSpec)
+                        subscriptionDialogEntry(navigator)
+                        transactionEntry(navigator, fadeSpec)
+                        transactionEditorEntry(navigator, slideSpec)
+                        transactionImporterEntry(navigator, slideSpec)
+                        transferEditorEntry(navigator, slideSpec)
+                    }
+
+                    val enterTransition = scaleIn(scaleSpec, 0.96f) +
+                            slideInVertically(slideSpec) { it / 28 } +
+                            fadeIn(fadeSpec)
+                    val popEnterTransition = scaleIn(scaleSpec, 1.04f) +
+                            slideInVertically(slideSpec) { -it / 28 } +
+                            fadeIn(fadeSpec)
+                    val exitTransition = scaleOut(scaleSpec, 0.9f) + fadeOut(fadeSpec)
+
+                    CompositionLocalProvider(
+                        LocalSnackbarHostState provides snackbarHostState,
+                        LocalIsSinglePane provides isSinglePane,
+                        LocalIsNavRailVisible provides isNavRailVisible,
+                    ) {
+                        NavDisplay(
+                            entries = appState.navigationState.toEntries(entryProvider),
+                            sceneStrategies = listOf(
+                                remember { DialogSceneStrategy() },
+                                rememberListDetailSceneStrategy(),
+                            ),
+                            onBack = navigator::goBack,
+                            transitionSpec = { enterTransition togetherWith exitTransition },
+                            popTransitionSpec = { popEnterTransition togetherWith exitTransition },
+                            predictivePopTransitionSpec = { popEnterTransition togetherWith exitTransition },
+                            sharedTransitionScope = LocalSharedTransitionScope.current,
+                        )
+                    }
+                    FabMenu(
+                        visible = isFabVisible,
+                        onMenuItemClick = { fabItem ->
+                            when (fabItem) {
+                                WALLET -> navigator.navigateToWalletDialog()
+                                CATEGORY -> navigator.navigateToCategoryEditor()
+                                SUBSCRIPTION -> navigator.navigateToSubscriptionDialog()
+                            }
+                        },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .windowInsetsPadding(WindowInsets.systemBars),
+                        toggleContainerSize = if (isNavRailVisible) {
+                            ToggleFloatingActionButtonDefaults.containerSizeMedium()
+                        } else {
+                            ToggleFloatingActionButtonDefaults.containerSize()
+                        },
+                    )
+                }
             }
         }
     }
 }
 
+/** پیام‌های مربوط به سیستم In-App Update را در Snackbar اصلی برنامه مدیریت می‌کند. */
 @Composable
 private fun InAppUpdateSnackbarHandler(
     inAppUpdateResult: InAppUpdateResult,
