@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">PoolYar</string>
-    <string name="as_drawer_profile_name">AS Team</string>
-    <string name="as_drawer_profile_hint">Tap to choose a profile image</string>
+    <string name="as_drawer_profile_name">PoolYar user</string>
+    <string name="as_drawer_profile_hint">Tap image to change photo; tap name to edit</string>
     <string name="as_drawer_home">Home</string>
     <string name="as_drawer_categories">Categories</string>
     <string name="as_drawer_subscriptions">Recurring payments</string>
@@ -14,4 +14,8 @@
     <string name="as_drawer_open">Open menu</string>
     <string name="as_about_text">PoolYar is a personal finance manager developed and localized by AS Team Group.</string>
     <string name="as_share_text">PoolYar - personal finance management by AS Team Group</string>
+    <string name="as_profile_edit_name">Edit profile name</string>
+    <string name="as_profile_name_label">Name</string>
+    <string name="as_profile_save">Save</string>
+    <string name="as_profile_cancel">Cancel</string>
 </resources>

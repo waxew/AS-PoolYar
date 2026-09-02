@@ -16,6 +16,7 @@ import java.util.Locale
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
 
+/** مبلغ را با جداکنندهٔ هزارگان، حداکثر دو رقم اعشار و ارز انتخابی نمایش می‌دهد. */
 fun BigDecimal.formatAmount(
     currency: Currency,
     plusPrefix: Boolean = false,
@@ -30,6 +31,9 @@ fun BigDecimal.formatAmount(
     }
 }
 
+/**
+ * DecimalFormat پایهٔ پول‌یار. Grouping به‌صورت صریح فعال شده تا مبالغ بزرگ همیشه سه‌رقمی جدا شوند.
+ */
 fun getDecimalFormat(
     currency: Currency,
     locale: Locale = Locale.getDefault(),
@@ -37,6 +41,8 @@ fun getDecimalFormat(
     return (DecimalFormat.getCurrencyInstance(locale) as DecimalFormat).apply {
         minimumFractionDigits = 0
         maximumFractionDigits = 2
+        isGroupingUsed = true
+        groupingSize = 3
         this.currency = currency
     }
 }

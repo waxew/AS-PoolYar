@@ -2,13 +2,13 @@ package ru.resodostudios.cashsense.ui
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.ImageView
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.IconButton
@@ -26,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
@@ -46,7 +46,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.launch
+import ru.resodostudios.cashsense.BuildConfig
 import ru.resodostudios.cashsense.R
 import ru.resodostudios.cashsense.feature.category.list.api.CategoriesNavKey
 import ru.resodostudios.cashsense.feature.home.api.HomeNavKey
@@ -54,13 +56,15 @@ import ru.resodostudios.cashsense.feature.settings.api.SettingsNavKey
 import ru.resodostudios.cashsense.feature.subscription.list.api.SubscriptionsNavKey
 import ru.resodostudios.core.navigation.Navigator
 
+private const val AS_PROFILE_PREFS = "as_team_profile"
+private const val PROFILE_URI_KEY = "profile_uri"
+private const val PROFILE_NAME_KEY = "profile_name"
+
 /**
- * میزبان منوی مشترک AS Team برای پول‌یار.
+ * منوی مشترک AS Team برای پول‌یار.
  *
- * Drawer عمداً با LayoutDirection.Rtl ساخته شده تا مستقل از زبان فعلی دستگاه از سمت راست باز شود.
- * جهت محتوای اصلی برنامه بلافاصله به مقدار قبلی برگردانده می‌شود تا صفحه‌های انگلیسی یا سایر زبان‌ها
- * ناخواسته RTL نشوند. اکشن‌های Share، Contact و Exit نیز در همین لایه قرار دارند تا در تمام صفحه‌ها
- * رفتار یکسانی داشته باشند.
+ * تصویر و نام پروفایل در SharedPreferences ذخیره می‌شوند تا بعد از بسته‌شدن برنامه باقی بمانند.
+ * انتخاب تصویر با OpenDocument انجام می‌شود تا مجوز خواندن URI به‌صورت پایدار حفظ شود.
  */
 @Composable
 fun AsTeamDrawer(
@@ -71,14 +75,30 @@ fun AsTeamDrawer(
     val originalLayoutDirection = LocalLayoutDirection.current
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val prefs = remember { context.getSharedPreferences(AS_PROFILE_PREFS, 0) }
 
     var showAboutDialog by remember { mutableStateOf(false) }
-    var selectedProfileUri by remember { mutableStateOf<Uri?>(null) }
+    var showNameDialog by remember { mutableStateOf(false) }
+    var profileName by remember {
+        mutableStateOf(prefs.getString(PROFILE_NAME_KEY, null).orEmpty())
+    }
+    var selectedProfileUri by remember {
+        mutableStateOf(prefs.getString(PROFILE_URI_KEY, null)?.let(Uri::parse))
+    }
 
     val profilePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
+        contract = ActivityResultContracts.OpenDocument(),
     ) { uri ->
-        selectedProfileUri = uri
+        if (uri != null) {
+            runCatching {
+                context.contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION,
+                )
+            }
+            selectedProfileUri = uri
+            prefs.edit().putString(PROFILE_URI_KEY, uri.toString()).apply()
+        }
     }
 
     fun closeAndNavigate(action: () -> Unit) {
@@ -114,25 +134,39 @@ fun AsTeamDrawer(
                             .padding(horizontal = 16.dp, vertical = 20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        // در این فاز URI انتخاب‌شده در State نگهداری می‌شود؛ نمایش و Persist تصویر در فاز بعدی تکمیل می‌شود.
                         Box(
                             modifier = Modifier
                                 .size(82.dp)
                                 .clip(CircleShape)
-                                .clickable { profilePicker.launch("image/*") },
+                                .clickable { profilePicker.launch(arrayOf("image/*")) },
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text(
-                                text = if (selectedProfileUri == null) "AS" else "✓",
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                            )
+                            val uri = selectedProfileUri
+                            if (uri == null) {
+                                Text(
+                                    text = "AS",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            } else {
+                                AndroidView(
+                                    factory = { viewContext ->
+                                        ImageView(viewContext).apply {
+                                            scaleType = ImageView.ScaleType.CENTER_CROP
+                                            setImageURI(uri)
+                                        }
+                                    },
+                                    update = { imageView -> imageView.setImageURI(uri) },
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                            }
                         }
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            text = stringResource(R.string.as_drawer_profile_name),
+                            text = profileName.ifBlank { stringResource(R.string.as_drawer_profile_name) },
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.clickable { showNameDialog = true },
                         )
                         Text(
                             text = stringResource(R.string.as_drawer_profile_hint),
@@ -182,22 +216,47 @@ fun AsTeamDrawer(
             CompositionLocalProvider(LocalLayoutDirection provides originalLayoutDirection) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     content()
-
-                    // دکمه همبرگری در تمام Screenهای اصلی قابل دسترسی است و در گوشهٔ بالا-راست می‌ماند.
                     IconButton(
                         onClick = { scope.launch { drawerState.open() } },
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(top = 8.dp, end = 8.dp),
                     ) {
-                        Text(
-                            text = "☰",
-                            style = MaterialTheme.typography.headlineSmall,
-                        )
+                        Text("☰", style = MaterialTheme.typography.headlineSmall)
                     }
                 }
             }
         }
+    }
+
+    if (showNameDialog) {
+        var draftName by remember(profileName) { mutableStateOf(profileName) }
+        AlertDialog(
+            onDismissRequest = { showNameDialog = false },
+            title = { Text(stringResource(R.string.as_profile_edit_name)) },
+            text = {
+                OutlinedTextField(
+                    value = draftName,
+                    onValueChange = { draftName = it.take(40) },
+                    singleLine = true,
+                    label = { Text(stringResource(R.string.as_profile_name_label)) },
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        profileName = draftName.trim()
+                        prefs.edit().putString(PROFILE_NAME_KEY, profileName).apply()
+                        showNameDialog = false
+                    },
+                ) { Text(stringResource(R.string.as_profile_save)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showNameDialog = false }) {
+                    Text(stringResource(R.string.as_profile_cancel))
+                }
+            },
+        )
     }
 
     if (showAboutDialog) {
@@ -208,7 +267,7 @@ fun AsTeamDrawer(
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(stringResource(R.string.as_about_text))
                     Text("Develop by AS Team Group")
-                    Text("Version 1.0.0")
+                    Text("Version ${BuildConfig.VERSION_NAME}")
                     Text("AS.Developers.Support@Gmail.Com")
                 }
             },
@@ -221,7 +280,7 @@ fun AsTeamDrawer(
     }
 }
 
-/** آیتم ساده و یکسان Drawer؛ استفاده از متن نمادین وابستگی به مجموعه آیکون اضافی را حذف می‌کند. */
+/** آیتم یکسان Drawer برای جلوگیری از تکرار منطق Navigation و فاصله‌گذاری. */
 @Composable
 private fun DrawerItem(
     symbol: String,

@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">پول‌یار</string>
     <string name="as_drawer_profile_name">کاربر پول‌یار</string>
-    <string name="as_drawer_profile_hint">برای انتخاب تصویر پروفایل لمس کنید</string>
+    <string name="as_drawer_profile_hint">برای تغییر عکس روی تصویر و برای ویرایش نام روی نام لمس کنید</string>
     <string name="as_drawer_home">خانه</string>
     <string name="as_drawer_categories">دسته‌بندی‌ها</string>
     <string name="as_drawer_subscriptions">پرداخت‌های دوره‌ای</string>
@@ -14,4 +14,8 @@
     <string name="as_drawer_open">باز کردن منو</string>
     <string name="as_about_text">پول‌یار یک برنامهٔ مدیریت مالی شخصی است که توسط AS Team Group توسعه و فارسی‌سازی می‌شود.</string>
     <string name="as_share_text">پول‌یار؛ مدیریت مالی شخصی توسط AS Team Group</string>
+    <string name="as_profile_edit_name">ویرایش نام پروفایل</string>
+    <string name="as_profile_name_label">نام</string>
+    <string name="as_profile_save">ذخیره</string>
+    <string name="as_profile_cancel">انصراف</string>
 </resources>
