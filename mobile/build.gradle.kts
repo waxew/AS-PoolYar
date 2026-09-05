@@ -12,28 +12,15 @@ plugins {
 
 android {
     defaultConfig {
-        // شناسهٔ عمومی نصب و انتشار پول‌یار؛ با کدبیس مرجع تداخل ندارد.
+        // Public install/package identity for AS-PoolYar.
         applicationId = "com.asteam.poolyar"
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         androidResources.localeFilters += setOf(
-            "en",
-            "fa",
-            "ar",
-            "de",
-            "es",
-            "fr",
-            "hi",
-            "it",
-            "ja",
-            "ko",
-            "pl",
-            "ru",
-            "ta",
-            "zh",
+            "en", "fa", "ar", "de", "es", "fr", "hi", "it", "ja", "ko", "pl", "ru", "ta", "zh",
         )
     }
 
@@ -49,7 +36,7 @@ android {
             isShrinkResources = runMinification
             applicationIdSuffix = CsBuildType.RELEASE.applicationIdSuffix
 
-            // TODO AS Team: پیش از انتشار عمومی، SigningConfig اختصاصی Release اضافه شود.
+            // Temporary local/CI signing only. Configure AS Team release keystore before store distribution.
             signingConfig = signingConfigs.named("debug").get()
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -71,7 +58,7 @@ android {
         }
     }
 
-    // Namespace داخلی فعلاً برای کاهش ریسک Refactor گسترده حفظ شده است.
+    // Keep the internal namespace stable until the full multi-module package migration is validated.
     namespace = "ru.resodostudios.cashsense"
 }
 
@@ -114,7 +101,6 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.shortcuts)
     implementation(projects.core.ui)
-
     implementation(projects.work)
 
     implementation(libs.androidx.activity.compose)
@@ -134,7 +120,6 @@ dependencies {
     implementation(libs.play.review.ktx)
 
     debugImplementation(libs.androidx.compose.ui.testManifest)
-
     baselineProfile(projects.baselineprofile)
 }
 
