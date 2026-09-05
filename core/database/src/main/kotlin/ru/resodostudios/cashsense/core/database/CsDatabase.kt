@@ -49,7 +49,6 @@ import ru.resodostudios.cashsense.core.database.util.UuidConverter
     CurrencyConverter::class,
     InstantConverter::class,
     RepeatingIntervalTypeConverter::class,
-    RepeatingIntervalTypeConverter::class,
     UuidConverter::class,
 )
 internal abstract class CsDatabase : RoomDatabase() {
